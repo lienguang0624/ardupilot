@@ -28,13 +28,20 @@
    maximum number of GPS instances available on this platform. If more
    than 1 then redundant sensors may be available
  */
+// 允许的最大物理GPS传感器数量-不包括通过混合接收器数据创建的虚拟GPS
 #define GPS_MAX_RECEIVERS 2 // maximum number of physical GPS sensors allowed - does not include virtual GPS created by blending receiver data
+// GPs实例的最大数量，包括通过混合接收器数据创建的“虚拟” GPS
 #define GPS_MAX_INSTANCES  (GPS_MAX_RECEIVERS + 1) // maximum number of GPs instances including the 'virtual' GPS created by blending receiver data
+//虚拟混合GPS始终是最高实例（2）
 #define GPS_BLENDED_INSTANCE GPS_MAX_RECEIVERS  // the virtual blended GPS is always the highest instance (2)
 #define GPS_RTK_INJECT_TO_ALL 127
+// rate_ms的最大值（即最慢的更新速率）为5hz或200ms
 #define GPS_MAX_RATE_MS 200 // maximum value of rate_ms (i.e. slowest update rate) is 5hz or 200ms
+//将未知DOP设置为最大值，这对于MAVLink也是正确的
 #define GPS_UNKNOWN_DOP UINT16_MAX // set unknown DOP's to maximum value, which is also correct for MAVLink
+//任何GPS驱动程序预期返回的最差延迟值，以秒为单位
 #define GPS_WORST_LAG_SEC 0.22f // worst lag value any GPS driver is expected to return, expressed in seconds
+// 200 ms（5Hz）+ 45 ms缓冲
 #define GPS_MAX_DELTA_MS 245 // 200 ms (5Hz) + 45 ms buffer
 
 // the number of GPS leap seconds
@@ -74,7 +81,7 @@ public:
         return *_singleton;
     }
 
-    // GPS driver types
+    // GPS driver types GPS驱动器类型
     enum GPS_Type {
         GPS_TYPE_NONE  = 0,
         GPS_TYPE_AUTO  = 1,
@@ -95,16 +102,16 @@ public:
 
     /// GPS status codes
     enum GPS_Status {
-        NO_GPS = GPS_FIX_TYPE_NO_GPS,                     ///< No GPS connected/detected
-        NO_FIX = GPS_FIX_TYPE_NO_FIX,                     ///< Receiving valid GPS messages but no lock
-        GPS_OK_FIX_2D = GPS_FIX_TYPE_2D_FIX,              ///< Receiving valid messages and 2D lock
-        GPS_OK_FIX_3D = GPS_FIX_TYPE_3D_FIX,              ///< Receiving valid messages and 3D lock
-        GPS_OK_FIX_3D_DGPS = GPS_FIX_TYPE_DGPS,           ///< Receiving valid messages and 3D lock with differential improvements
+        NO_GPS = GPS_FIX_TYPE_NO_GPS,                     ///< No GPS connected/detected 未连接/未检测到GPS
+        NO_FIX = GPS_FIX_TYPE_NO_FIX,                     ///< Receiving valid GPS messages but no lock 接收有效的GPS消息但没有锁定
+        GPS_OK_FIX_2D = GPS_FIX_TYPE_2D_FIX,              ///< Receiving valid messages and 2D lock 接收有效消息和2D锁定
+        GPS_OK_FIX_3D = GPS_FIX_TYPE_3D_FIX,              ///< Receiving valid messages and 3D lock 接收有效消息和3D锁定
+        GPS_OK_FIX_3D_DGPS = GPS_FIX_TYPE_DGPS,           ///< Receiving valid messages and 3D lock with differential improvements 接收有效消息和3D锁定并进行了不同的改进
         GPS_OK_FIX_3D_RTK_FLOAT = GPS_FIX_TYPE_RTK_FLOAT, ///< Receiving valid messages and 3D RTK Float
         GPS_OK_FIX_3D_RTK_FIXED = GPS_FIX_TYPE_RTK_FIXED, ///< Receiving valid messages and 3D RTK Fixed
     };
 
-    // GPS navigation engine settings. Not all GPS receivers support
+    // GPS navigation engine settings. Not all GPS receivers support GPS导航引擎设置。 并非所有GPS接收器都支持
     // this
     enum GPS_Engine_Setting {
         GPS_ENGINE_NONE        = -1,
@@ -125,28 +132,29 @@ public:
     /*
       The GPS_State structure is filled in by the backend driver as it
       parses each message from the GPS.
+      后端驱动程序在解析来自GPS的每个消息时会填充GPS_State结构。
      */
     struct GPS_State {
-        uint8_t instance; // the instance number of this GPS
+        uint8_t instance; // the instance number of this GPS //此GPS的实例号
 
-        // all the following fields must all be filled by the backend driver
+        // all the following fields must all be filled by the backend driver //以下所有字段都必须由后端驱动程序填充
         GPS_Status status;                  ///< driver fix status
         uint32_t time_week_ms;              ///< GPS time (milliseconds from start of GPS week)
-        uint16_t time_week;                 ///< GPS week number
-        Location location;                  ///< last fix location
-        float ground_speed;                 ///< ground speed in m/sec
-        float ground_course;                ///< ground course in degrees
-        uint16_t hdop;                      ///< horizontal dilution of precision in cm
-        uint16_t vdop;                      ///< vertical dilution of precision in cm
-        uint8_t num_sats;                   ///< Number of visible satellites
-        Vector3f velocity;                  ///< 3D velocity in m/s, in NED format
-        float speed_accuracy;               ///< 3D velocity RMS accuracy estimate in m/s
-        float horizontal_accuracy;          ///< horizontal RMS accuracy estimate in m
-        float vertical_accuracy;            ///< vertical RMS accuracy estimate in m
+        uint16_t time_week;                 ///< GPS week number GPS周数
+        Location location;                  ///< last fix location 最后修复位置
+        float ground_speed;                 ///< ground speed in m/sec 地面速度（米/秒）
+        float ground_course;                ///< ground course in degrees 地面路线，以度为单位
+        uint16_t hdop;                      ///< horizontal dilution of precision in cm 水平稀释精度（厘米）
+        uint16_t vdop;                      ///< vertical dilution of precision in cm 垂直稀释精度，以厘米为单位
+        uint8_t num_sats;                   ///< Number of visible satellites 可见卫星数
+        Vector3f velocity;                  ///< 3D velocity in m/s, in NED format /// <NED格式的3D速度（m / s）
+        float speed_accuracy;               ///< 3D velocity RMS accuracy estimate in m/s 以m / s为单位的3D速度RMS精度估计
+        float horizontal_accuracy;          ///< horizontal RMS accuracy estimate in m 以m为单位的水平RMS精度估计
+        float vertical_accuracy;            ///< vertical RMS accuracy estimate in m 垂直RMS精度估计，以m
         bool have_vertical_velocity:1;      ///< does GPS give vertical velocity? Set to true only once available.
         bool have_speed_accuracy:1;         ///< does GPS give speed accuracy? Set to true only once available.
         bool have_horizontal_accuracy:1;    ///< does GPS give horizontal position accuracy? Set to true only once available.
-        bool have_vertical_accuracy:1;      ///< does GPS give vertical position accuracy? Set to true only once available.
+        bool have_vertical_accuracy:1;      ///< does GPS give vertical position accuracy? Set to true only once available. GPS能提供垂直位置精度吗？ 仅在可用时设置为true。
         uint32_t last_gps_time_ms;          ///< the system time we got the last GPS timestamp, milliseconds
 
         // all the following fields must only all be filled by RTK capable backend drivers
@@ -162,31 +170,32 @@ public:
         int32_t  rtk_iar_num_hypotheses;   ///< Current number of integer ambiguity hypotheses
     };
 
-    /// Startup initialisation.
+    /// Startup initialisation. 初始化
     void init(const AP_SerialManager& serial_manager);
 
     /// Update GPS state based on possible bytes received from the module.
     /// This routine must be called periodically (typically at 10Hz or
     /// more) to process incoming data.
+    ///根据从模块接收到的字节更新GPS状态。必须定期调用此例程（通常以10Hz或更高的频率）以处理传入数据。
     void update(void);
 
-    // Pass mavlink data to message handlers (for MAV type)
+    // Pass mavlink data to message handlers (for MAV type) 对于MAVLINK协议的外设需要先解算
     void handle_msg(const mavlink_message_t *msg);
 
     // Accessor functions
 
     // return number of active GPS sensors. Note that if the first GPS
     // is not present but the 2nd is then we return 2. Note that a blended
-    // GPS solution is treated as an additional sensor.
+    // GPS solution is treated as an additional sensor.//返回活动GPS传感器的数量。 请注意，如果不存在第一个GPS，但是第二个则返回2。请注意，混合的GPS解决方案被视为附加传感器。
     uint8_t num_sensors(void) const;
 
     // Return the index of the primary sensor which is the index of the sensor contributing to
-    // the output. A blended solution is available as an additional instance
+    // the output. A blended solution is available as an additional instance//返回主传感器的索引，该索引是对输出有贡献的传感器的索引。 混合解决方案可作为其他实例使用
     uint8_t primary_sensor(void) const {
         return primary_instance;
     }
 
-    /// Query GPS status
+    /// Query GPS status 查询GPS状态
     GPS_Status status(uint8_t instance) const {
         return state[instance].status;
     }
@@ -194,10 +203,10 @@ public:
         return status(primary_instance);
     }
 
-    // Query the highest status this GPS supports (always reports GPS_OK_FIX_3D for the blended GPS)
+    // Query the highest status this GPS supports (always reports GPS_OK_FIX_3D for the blended GPS) 查询此GPS支持的最高状态（始终为混合GPS报告GPS_OK_FIX_3D）
     GPS_Status highest_supported_status(uint8_t instance) const;
 
-    // location of last fix
+    // location of last fix 最后修复的位置
     const Location &location(uint8_t instance) const {
         return state[instance].location;
     }
@@ -205,7 +214,7 @@ public:
         return location(primary_instance);
     }
 
-    // report speed accuracy
+    // report speed accuracy 报告速度准确性
     bool speed_accuracy(uint8_t instance, float &sacc) const;
     bool speed_accuracy(float &sacc) const {
         return speed_accuracy(primary_instance, sacc);
