@@ -135,13 +135,16 @@ enum ap_var_type {
 /// Base class for variables.
 ///
 /// Provides naming and lookup services for variables.
+///变量的基类。
+///
+///为变量提供命名和查找服务。
 ///
 class AP_Param
 {
 public:
     // the Info and GroupInfo structures are passed by the main
     // program in setup() to give information on how variables are
-    // named and their location in memory
+    // named and their location in memory //主程序在setup（）中传递Info和GroupInfo结构，以提供有关如何命名变量及其在内存中的位置的信息
     struct GroupInfo {
         uint8_t type; // AP_PARAM_*
         uint8_t idx;  // identifier within the group

@@ -3,6 +3,7 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
+        该程序是免费软件：您可以根据自由软件基金会发布的GNU通用公共许可证的条款（许可证的版本3）或（可选）任何更高版本来重新分发和/或修改它。
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,44 +82,45 @@
   scheduler table for fast CPUs - all regular tasks apart from the fast_loop()
   should be listed here, along with how often they should be called (in hz)
   and the maximum time they are expected to take (in microseconds)
+  快速CPU的调度程序表-除了fast_loop（）之外，所有常规任务都应在此处列出，以及它们被调用的频率（以hz为单位）以及预计将花费的最长时间（以微秒为单位）
  */
 const AP_Scheduler::Task Copter::scheduler_tasks[] = {
-    SCHED_TASK(rc_loop,              100,    130),
-    SCHED_TASK(throttle_loop,         50,     75),
-    SCHED_TASK(update_GPS,            50,    200),
-#if OPTFLOW == ENABLED
+    SCHED_TASK(rc_loop,              100,    130),// rc_loops-从发送器/接收器读取用户输入
+    SCHED_TASK(throttle_loop,         50,     75),// throttle_loop-油门循环
+    SCHED_TASK(update_GPS,            50,    200),// GPS更新
+#if OPTFLOW == ENABLED// 是否有光流传感器
     SCHED_TASK(update_optical_flow,  200,    160),
 #endif
-    SCHED_TASK(update_batt_compass,   10,    120),
-    SCHED_TASK(read_aux_switches,     10,     50),
-    SCHED_TASK(arm_motors_check,      10,     50),
-#if TOY_MODE_ENABLED == ENABLED
+    SCHED_TASK(update_batt_compass,   10,    120),// update_batt_compass-读取电池和指南针
+    SCHED_TASK(read_aux_switches,     10,     50),// read_aux_switches-检查辅助开关位置并调用配置的动作
+    SCHED_TASK(arm_motors_check,      10,     50),// arm_motors_check-检查飞行员输入以武装或撤消直升机
+#if TOY_MODE_ENABLED == ENABLED// 是否开启玩具模式
     SCHED_TASK_CLASS(ToyMode,              &copter.g2.toy_mode,         update,          10,  50),
 #endif
-    SCHED_TASK(auto_disarm_check,     10,     50),
-    SCHED_TASK(auto_trim,             10,     75),
-#if RANGEFINDER_ENABLED == ENABLED
-    SCHED_TASK(read_rangefinder,      20,    100),
+    SCHED_TASK(auto_disarm_check,     10,     50),// arm_motors_check-检查飞行员输入以武装或撤消直升机
+    SCHED_TASK(auto_trim,             10,     75),// auto_trim-稍微调整ahrs.roll_trim和ahrs.pitch_trim到当前的操纵杆位置，以便在飞行员尝试保持直升机水平时连续调用
+#if RANGEFINDER_ENABLED == ENABLED//是否有测距仪
+    SCHED_TASK(read_rangefinder,      20,    100),//返回测距仪的高度（以厘米为单位）
 #endif
-#if PROXIMITY_ENABLED == ENABLED
+#if PROXIMITY_ENABLED == ENABLED// 是否有激光测距
     SCHED_TASK_CLASS(AP_Proximity,         &copter.g2.proximity,        update,         100,  50),
 #endif
-#if BEACON_ENABLED == ENABLED
+#if BEACON_ENABLED == ENABLED//是否有信标定位
     SCHED_TASK_CLASS(AP_Beacon,            &copter.g2.beacon,           update,         400,  50),
 #endif
 #if VISUAL_ODOMETRY_ENABLED == ENABLED
-    SCHED_TASK(update_visual_odom,   400,     50),
+    SCHED_TASK(update_visual_odom,   400,     50),//视觉里程传感器
 #endif
-    SCHED_TASK(update_altitude,       10,    100),
-    SCHED_TASK(run_nav_updates,       50,    100),
-    SCHED_TASK(update_throttle_hover,100,     90),
-#if MODE_SMARTRTL_ENABLED == ENABLED
-    SCHED_TASK_CLASS(Copter::ModeSmartRTL, &copter.mode_smartrtl,       save_position,    3, 100),
+    SCHED_TASK(update_altitude,       10,    100),//(更新高度)读取baro和日志控制调整
+    SCHED_TASK(run_nav_updates,       50,    100),// run_nav_updates-自动驾驶仪的顶级调用，确保自动驾驶做出决定之前先计算“到航点的距离”之类的计算
+    SCHED_TASK(update_throttle_hover,100,     90),//更新油门控制 更新悬停所需的估计油门（如有必要）
+#if MODE_SMARTRTL_ENABLED == ENABLED// 是否开启智能返航
+    SCHED_TASK_CLASS(Copter::ModeSmartRTL, &copter.mode_smartrtl,       save_position,    3, 100),//保存当前位置以供smart_rtl飞行模式使用
 #endif
-    SCHED_TASK(three_hz_loop,          3,     75),
-    SCHED_TASK(compass_accumulate,   100,    100),
-    SCHED_TASK_CLASS(AP_Baro,              &copter.barometer,           accumulate,      50,  90),
-#if PRECISION_LANDING == ENABLED
+    SCHED_TASK(three_hz_loop,          3,     75),// 检查我们是否与地面站失去联系 检查我们是否丢失了地形数据
+    SCHED_TASK(compass_accumulate,   100,    100),// 如果启用了指南针，则尝试累积读数，同时更新用于磁偏角的初始位置
+    SCHED_TASK_CLASS(AP_Baro,              &copter.barometer,           accumulate,      50,  90),// 通话累积在所有驱动程序上
+#if PRECISION_LANDING == ENABLED// 是否开启精准降落
     SCHED_TASK(update_precland,      400,     50),
 #endif
 #if FRAME_CONFIG == HELI_FRAME
@@ -127,16 +129,16 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #if LOGGING_ENABLED == ENABLED
     SCHED_TASK(fourhundred_hz_logging,400,    50),
 #endif
-    SCHED_TASK_CLASS(AP_Notify,            &copter.notify,              update,          50,  90),
+    SCHED_TASK_CLASS(AP_Notify,            &copter.notify,              update,          50,  90),// 主要更新功能，频率为50Hz
     SCHED_TASK(one_hz_loop,            1,    100),
-    SCHED_TASK(ekf_check,             10,     75),
-    SCHED_TASK(gpsglitch_check,       10,     50),
-    SCHED_TASK(landinggear_update,    10,     75),
-    SCHED_TASK(lost_vehicle_check,    10,     50),
-    SCHED_TASK(gcs_check_input,      400,    180),
+    SCHED_TASK(ekf_check,             10,     75),// ekf_check-检测ekf方差是否超出公差并在10hz处调用触发故障安全
+    SCHED_TASK(gpsglitch_check,       10,     50),// 检查gps故障是否安全
+    SCHED_TASK(landinggear_update,    10,     75),// 以10Hz运行起落架控制器
+    SCHED_TASK(lost_vehicle_check,    10,     50),// 检查操纵杆输入是否触发丢失的车辆警报
+    SCHED_TASK(gcs_check_input,      400,    180),// 在GCS链接上查找传入的命令
     SCHED_TASK(gcs_send_heartbeat,     1,    110),
     SCHED_TASK(gcs_send_deferred,     50,    550),
-    SCHED_TASK(gcs_data_stream_send,  50,    550),
+    SCHED_TASK(gcs_data_stream_send,  50,    550),// 在两个链接上以给定的速率范围发送数据流
 #if MOUNT == ENABLED
     SCHED_TASK_CLASS(AP_Mount,             &copter.camera_mount,        update,          50,  75),
 #endif
@@ -196,15 +198,15 @@ constexpr int8_t Copter::_failsafe_priorities[7];
 
 void Copter::setup()
 {
-    // Load the default values of variables listed in var_info[]s
+    // Load the default values of variables listed in var_info[]s 加载var_info [] s中列出的变量的默认值
     AP_Param::setup_sketch_defaults();
 
-    // setup storage layout for copter
+    // setup storage layout for copter 设置直升机的存储布局
     StorageManager::set_layout_copter();
 
     init_ardupilot();
 
-    // initialise the main loop scheduler
+    // initialise the main loop scheduler 初始化主循环调度程序
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks), MASK_LOG_PM);
 }
 
@@ -264,33 +266,42 @@ void Copter::fast_loop()
 
 // rc_loops - reads user input from transmitter/receiver
 // called at 100hz
+// rc_loops-从发送器/接收器读取用户输入
+//以100hz调用
 void Copter::rc_loop()
 {
     // Read radio and 3-position switch on radio
+    //阅读收音机和收音机上的3位开关
     // -----------------------------------------
     read_radio();
     read_control_switch();
 }
 
 // throttle_loop - should be run at 50 hz
+//油门循环-应该以50 hz运行
 // ---------------------------
 void Copter::throttle_loop()
 {
     // update throttle_low_comp value (controls priority of throttle vs attitude control)
+    //更新油门_低_补偿值（控制油门与姿态控制的优先级）
     update_throttle_thr_mix();
 
     // check auto_armed status
+    //检查自动布防状态
     update_auto_armed();
 
 #if FRAME_CONFIG == HELI_FRAME
     // update rotor speed
+    //更新转子转速
     heli_update_rotor_speed_targets();
 
     // update trad heli swash plate movement
+    //更新传统直升机斜盘运动
     heli_update_landing_swash();
 #endif
 
     // compensate for ground effect (if enabled)
+    //补偿地面效应（如果启用）
     update_ground_effect_detector();
 }
 
@@ -391,10 +402,10 @@ void Copter::twentyfive_hz_logging()
 // three_hz_loop - 3.3hz loop
 void Copter::three_hz_loop()
 {
-    // check if we've lost contact with the ground station
+    // check if we've lost contact with the ground station 检查我们是否与地面站失去联系
     failsafe_gcs_check();
 
-    // check if we've lost terrain data
+    // check if we've lost terrain data 检查我们是否丢失了地形数据
     failsafe_terrain_check();
 
 #if AC_FENCE == ENABLED
@@ -422,12 +433,12 @@ void Copter::one_hz_loop()
     arming.update();
 
     if (!motors->armed()) {
-        // make it possible to change ahrs orientation at runtime during initial config
+        // make it possible to change ahrs orientation at runtime during initial config //可以在初始配置期间在运行时更改ahrs方向
         ahrs.set_orientation();
 
         update_using_interlock();
 
-        // check the user hasn't updated the frame class or type
+        // check the user hasn't updated the frame class or type //检查用户尚未更新框架类或类型
         motors->set_frame_class_and_type((AP_Motors::motor_frame_class)g2.frame_class.get(), (AP_Motors::motor_frame_type)g.frame_type.get());
 
 #if FRAME_CONFIG != HELI_FRAME
@@ -456,12 +467,12 @@ void Copter::one_hz_loop()
 // called at 50hz
 void Copter::update_GPS(void)
 {
-    static uint32_t last_gps_reading[GPS_MAX_INSTANCES];   // time of last gps message
+    static uint32_t last_gps_reading[GPS_MAX_INSTANCES];   // time of last gps message 最后一次gps消息的时间
     bool gps_updated = false;
 
     gps.update();
 
-    // log after every gps message
+    // log after every gps message 在每条gps消息后记录
     for (uint8_t i=0; i<gps.num_sensors(); i++) {
         if (gps.last_message_time_ms(i) != last_gps_reading[i]) {
             last_gps_reading[i] = gps.last_message_time_ms(i);

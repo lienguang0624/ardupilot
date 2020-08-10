@@ -292,17 +292,17 @@ bool AP_Param::check_var_info(void)
 }
 
 
-// setup the _var_info[] table
+// setup the _var_info[] table //设置_var_info []表
 bool AP_Param::setup(void)
 {
     struct EEPROM_header hdr;
 
-    // check the header
+    // check the header //检查标题
     _storage.read_block(&hdr, 0, sizeof(hdr));
     if (hdr.magic[0] != k_EEPROM_magic0 ||
         hdr.magic[1] != k_EEPROM_magic1 ||
         hdr.revision != k_EEPROM_revision) {
-        // header doesn't match. We can't recover any variables. Wipe
+        // header doesn't match. We can't recover any variables. Wipe //标头不匹配。 我们无法恢复任何变量。 擦拭标头并在标头后直接设置哨兵
         // the header and setup the sentinal directly after the header
         Debug("bad header in setup - erasing");
         erase_all();
@@ -1249,7 +1249,7 @@ bool AP_Param::set_object_value(const void *object_pointer,
 }
 
 
-// load default values for all scalars in a sketch. This does not
+// load default values for all scalars in a sketch. This does not //加载草图中所有标量的默认值。 这不会递归到子对象中
 // recurse into sub-objects
 void AP_Param::setup_sketch_defaults(void)
 {

@@ -21,9 +21,9 @@
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <AP_RangeFinder/AP_RangeFinder.h>
 
-#define PROXIMITY_MAX_INSTANCES             1   // Maximum number of proximity sensor instances available on this platform
-#define PROXIMITY_YAW_CORRECTION_DEFAULT    22  // default correction for sensor error in yaw
-#define PROXIMITY_MAX_IGNORE                6   // up to six areas can be ignored
+#define PROXIMITY_MAX_INSTANCES             1   // Maximum number of proximity sensor instances available on this platform 该平台上可用的最大接近传感器实例数
+#define PROXIMITY_YAW_CORRECTION_DEFAULT    22  // default correction for sensor error in yaw 偏航中传感器误差的默认校正
+#define PROXIMITY_MAX_IGNORE                6   // up to six areas can be ignored 最多六个区域可以忽略
 #define PROXIMITY_MAX_DIRECTION 8
 #define PROXIMITY_SENSOR_ID_START 10
 
@@ -57,7 +57,7 @@ public:
         Proximity_Good
     };
 
-    // structure holding distances in PROXIMITY_MAX_DIRECTION directions. used for sending distances to ground station
+    // structure holding distances in PROXIMITY_MAX_DIRECTION directions. used for sending distances to ground station 结构在PROXIMITY_MAX_DIRECTION方向上的保持距离。 用于向地面站发送距离
     struct Proximity_Distance_Array {
         uint8_t orientation[PROXIMITY_MAX_DIRECTION]; // orientation (i.e. rough direction) of the distance (see MAV_SENSOR_ORIENTATION)
         float distance[PROXIMITY_MAX_DIRECTION];      // distance in meters

@@ -64,7 +64,9 @@ const StorageManager::StorageArea StorageManager::layout_default[STORAGE_NUM_ARE
 /*
   layout for copter.
   On PX4v1 this gives 303 waypoints, 26 rally points and 38 fence points
-  On Pixhawk this gives 718 waypoints, 46 rally points and 70 fence points
+  On Pixhawk this gives 718 waypoints, 46 rally points and 70 fence points 直升机的布局。
+   在PX4v1上，这提供303个航点，26个拉力点和38个围栏点
+   在Pixhawk上，这提供了718个航点，46个拉力点和70个围栏点
  */
 const StorageManager::StorageArea StorageManager::layout_copter[STORAGE_NUM_AREAS] = {
     { StorageParam,   0,     1536}, // 0x600 param bytes

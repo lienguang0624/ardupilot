@@ -3,6 +3,9 @@
 // run_nav_updates - top level call for the autopilot
 // ensures calculations such as "distance to waypoint" are calculated before autopilot makes decisions
 // To-Do - rename and move this function to make it's purpose more clear
+// run_nav_updates-自动驾驶仪的顶级调用
+//确保自动驾驶做出决定之前先计算“到航点的距离”之类的计算
+//待办事项-重命名并移动此功能，以使其用途更清晰
 void Copter::run_nav_updates(void)
 {
     update_super_simple_bearing(false);
