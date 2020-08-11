@@ -1,7 +1,7 @@
 #include "Copter.h"
 
 /*
- * Init and run calls for loiter flight mode
+ * Init and run calls for loiter flight mode 发起并运行游荡飞行模式的呼叫
  */
 
 // loiter_init - initialise loiter controller
@@ -74,6 +74,8 @@ void Copter::ModeLoiter::precision_loiter_xy()
 
 // loiter_run - runs the loiter controller
 // should be called at 100hz or more
+// loiter_run-运行loiter控制器
+//应在100hz或更高的频率下调用
 void Copter::ModeLoiter::run()
 {
     LoiterModeState loiter_state;
@@ -87,34 +89,37 @@ void Copter::ModeLoiter::run()
     pos_control->set_speed_z(-get_pilot_speed_dn(), g.pilot_speed_up);
     pos_control->set_accel_z(g.pilot_accel_z);
 
-    // process pilot inputs unless we are in radio failsafe
+    // process pilot inputs unless we are in radio failsafe 如果遥控器没有失控
     if (!copter.failsafe.radio) {
         // apply SIMPLE mode transform to pilot inputs
         update_simple_mode();
 
-        // convert pilot input to lean angles
+        // convert pilot input to lean angles 获得飞手目标滚转和俯仰角
         get_pilot_desired_lean_angles(target_roll, target_pitch, loiter_nav->get_angle_max_cd(), attitude_control->get_althold_lean_angle_max());
 
-        // process pilot's roll and pitch input
+        // process pilot's roll and pitch input 获得飞手目标滚转和俯仰角加速度
         loiter_nav->set_pilot_desired_acceleration(target_roll, target_pitch, G_Dt);
 
-        // get pilot's desired yaw rate
+        // get pilot's desired yaw rate 获得飞手目标偏航角
         target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
 
-        // get pilot desired climb rate
+        // get pilot desired climb rate 将其转化为油门
         target_climb_rate = get_pilot_desired_climb_rate(channel_throttle->get_control_in());
         target_climb_rate = constrain_float(target_climb_rate, -get_pilot_speed_dn(), g.pilot_speed_up);
     } else {
         // clear out pilot desired acceleration in case radio failsafe event occurs and we do not switch to RTL for some reason
+        //如果发生无线电故障安全事件并且出于某种原因我们不切换到RTL，请清除飞行员所需的加速度
         loiter_nav->clear_pilot_desired_acceleration();
     }
 
     // relax loiter target if we might be landed
+    //如果我们可以降落，放松游荡目标
     if (ap.land_complete_maybe) {
         loiter_nav->soften_for_landing();
     }
 
     // Loiter State Machine Determination
+    //游荡状态机确定
     if (!motors->armed() || !motors->get_interlock()) {
         loiter_state = Loiter_MotorStopped;
     } else if (takeoff.running() || takeoff.triggered(target_climb_rate)) {
@@ -156,31 +161,36 @@ void Copter::ModeLoiter::run()
         break;
 
     case Loiter_Takeoff:
-        // set motors to full range
+        // set motors to full range 将电动机设置为全范围
         motors->set_desired_spool_state(AP_Motors::DESIRED_THROTTLE_UNLIMITED);
 
-        // initiate take-off
+        // initiate take-off //启动起飞
         if (!takeoff.running()) {
             takeoff.start(constrain_float(g.pilot_takeoff_alt,0.0f,1000.0f));
-            // indicate we are taking off
+            // indicate we are taking off //表示我们正在起飞
             set_land_complete(false);
-            // clear i term when we're taking off
+            // clear i term when we're taking off //起飞时清除i字词
             set_throttle_takeoff();
         }
 
         // get takeoff adjusted pilot and takeoff climb rates
+        // 获得调整后的起飞飞行员和起飞爬升率
         takeoff.get_climb_rates(target_climb_rate, takeoff_climb_rate);
 
         // get avoidance adjusted climb rate
+        // 获得回避调整后的爬升率
         target_climb_rate = get_avoidance_adjusted_climbrate(target_climb_rate);
 
         // run loiter controller
+        // 运行loiter控制器
         loiter_nav->update(ekfGndSpdLimit, ekfNavVelGainScaler);
 
         // call attitude controller
+        //呼叫姿态控制器
         attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(loiter_nav->get_roll(), loiter_nav->get_pitch(), target_yaw_rate);
 
         // update altitude target and call position controller
+        //更新高度目标并调用位置控制器
         pos_control->set_alt_target_from_climb_rate_ff(target_climb_rate, G_Dt, false);
         pos_control->add_takeoff_climb_rate(takeoff_climb_rate, G_Dt);
         pos_control->update_z_controller();
@@ -188,6 +198,7 @@ void Copter::ModeLoiter::run()
 
     case Loiter_Landed:
         // set motors to spin-when-armed if throttle below deadzone, otherwise full range (but motors will only spin at min throttle)
+        //如果油门低于死区，则将电机设置为布防时旋转，否则为全范围旋转（但电动机仅以最小油门旋转）
         if (target_climb_rate < 0.0f) {
             motors->set_desired_spool_state(AP_Motors::DESIRED_SPIN_WHEN_ARMED);
         } else {
@@ -206,13 +217,13 @@ void Copter::ModeLoiter::run()
         // set motors to full range
         motors->set_desired_spool_state(AP_Motors::DESIRED_THROTTLE_UNLIMITED);
 
-#if PRECISION_LANDING == ENABLED
+#if PRECISION_LANDING == ENABLED// 精准降落
         if (do_precision_loiter()) {
             precision_loiter_xy();
         }
 #endif
 
-        // run loiter controller
+        // run loiter controller 最重要的控制器
         loiter_nav->update(ekfGndSpdLimit, ekfNavVelGainScaler);
 
         // call attitude controller

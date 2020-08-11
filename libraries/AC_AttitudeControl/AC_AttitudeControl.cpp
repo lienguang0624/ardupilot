@@ -819,6 +819,7 @@ Vector3f AC_AttitudeControl::update_ang_vel_target_from_att_error(Vector3f attit
 }
 
 // Run the roll angular velocity PID controller and return the output
+//运行侧倾角速度PID控制器并返回输出
 float AC_AttitudeControl::rate_target_to_motor_roll(float rate_actual_rads, float rate_target_rads)
 {
     float rate_error_rads = rate_target_rads - rate_actual_rads;

@@ -403,7 +403,7 @@ void AP_GPS::send_blob_update(uint8_t instance)
 /*
   run detection step for one GPS instance. If this finds a GPS then it
   will fill in drivers[instance] and change state[instance].status
-  from NO_GPS to NO_FIX.
+  from NO_GPS to NO_FIX.检测是那款GPS
  */
 void AP_GPS::detect_instance(uint8_t instance)
 {
@@ -595,11 +595,12 @@ bool AP_GPS::should_df_log() const
 
 /*
   update one GPS instance. This should be called at 10Hz or greater
+  更新一个GPS实例。 应该以10Hz或更高的频率调用
  */
 void AP_GPS::update_instance(uint8_t instance)
 {
     if (_type[instance] == GPS_TYPE_HIL) {
-        // in HIL, leave info alone
+        // in HIL, leave info alone 在HIL中，不理会信息
         return;
     }
     if (_type[instance] == GPS_TYPE_NONE) {
@@ -610,28 +611,30 @@ void AP_GPS::update_instance(uint8_t instance)
         return;
     }
     if (locked_ports & (1U<<instance)) {
-        // the port is locked by another driver
+        // the port is locked by another driver 该端口已被另一个驱动程序锁定
         return;
     }
 
     if (drivers[instance] == nullptr || state[instance].status == NO_GPS) {
         // we don't yet know the GPS type of this one, or it has timed
         // out and needs to be re-initialised
+        //我们尚不知道该型号的GPS类型，或者该型号已超时，需要重新初始化
         detect_instance(instance);
         return;
     }
 
     if (_auto_config == GPS_AUTO_CONFIG_ENABLE) {
-        send_blob_update(instance);
+        send_blob_update(instance);// 自动检测GPS
     }
 
-    // we have an active driver for this instance
+    // we have an active driver for this instance 我们有这个实例的活动驱动程序
     bool result = drivers[instance]->read();
     const uint32_t tnow = AP_HAL::millis();
 
     // if we did not get a message, and the idle timer of 2 seconds
     // has expired, re-initialise the GPS. This will cause GPS
     // detection to run again
+    //如果未收到消息，并且2秒钟的空闲计时器已过期，请重新初始化GPS。 这将导致GPS检测再次运行
     bool data_should_be_logged = false;
     if (!result) {
         if (tnow - timing[instance].last_message_time_ms > GPS_TIMEOUT_MS) {
@@ -641,22 +644,25 @@ void AP_GPS::update_instance(uint8_t instance)
             state[instance].vdop = GPS_UNKNOWN_DOP;
             timing[instance].last_message_time_ms = tnow;
             timing[instance].delta_time_ms = GPS_TIMEOUT_MS;
-            // do not try to detect again if type is MAV
+            // do not try to detect again if type is MAV 不要尝试再次检测类型是否为MAV
             if (_type[instance] == GPS_TYPE_MAV) {
                 state[instance].status = NO_FIX;
             } else {
                 // free the driver before we run the next detection, so we
                 // don't end up with two allocated at any time
+                //在运行下一个检测之前释放驱动程序，因此我们不会在任何时候分配两个
                 delete drivers[instance];
                 drivers[instance] = nullptr;
                 state[instance].status = NO_GPS;
             }
             // log this data as a "flag" that the GPS is no longer
             // valid (see PR#8144)
+            //将此数据记录为GPS不再有效的“标志”（请参阅PR＃8144）
             data_should_be_logged = true;
         }
     } else {
         // delta will only be correct after parsing two messages
+        // 仅在解析两条消息后，增量才是正确的
         timing[instance].delta_time_ms = tnow - timing[instance].last_message_time_ms;
         timing[instance].last_message_time_ms = tnow;
         if (state[instance].status >= GPS_OK_FIX_2D) {
@@ -687,7 +693,7 @@ void AP_GPS::update(void)
         update_instance(i);
     }
 
-    // calculate number of instances
+    // calculate number of instances 计算实例数
     for (uint8_t i=0; i<GPS_MAX_RECEIVERS; i++) {
         if (state[i].status != NO_GPS) {
             num_instances = i+1;
@@ -695,15 +701,18 @@ void AP_GPS::update(void)
     }
 
     // if blending is requested, attempt to calculate weighting for each GPS
+    // 如果要求混合，请尝试计算每个GPS的权重
     if (_auto_switch == 2) {
         _output_is_blended = calc_blend_weights();
         // adjust blend health counter
+        //调整混合健康计数器
         if (!_output_is_blended) {
             _blend_health_counter = MIN(_blend_health_counter+BLEND_COUNTER_FAILURE_INCREMENT, 100);
         } else if (_blend_health_counter > 0) {
             _blend_health_counter--;
         }
         // stop blending if unhealthy
+        //如果不健康，则停止混合
         if (_blend_health_counter >= 50) {
             _output_is_blended = false;
         }
@@ -714,11 +723,14 @@ void AP_GPS::update(void)
 
     if (_output_is_blended) {
         // Use the weighting to calculate blended GPS states
+        //使用权重来计算GPS混合状态
         calc_blended_state();
         // set primary to the virtual instance
+        //将primary设置为虚拟实例
         primary_instance = GPS_BLENDED_INSTANCE;
     } else {
         // use switch logic to find best GPS
+        //使用开关逻辑找到最佳的GPS
         uint32_t now = AP_HAL::millis();
         if (_auto_switch >= 1) {
             // handling switching away from blended GPS
@@ -775,6 +787,7 @@ void AP_GPS::update(void)
     }
 
     // update notify with gps status. We always base this on the primary_instance
+    //更新gps状态通知。 我们总是基于primary_instance
     AP_Notify::flags.gps_status = state[primary_instance].status;
     AP_Notify::flags.gps_num_sats = state[primary_instance].num_sats;
 

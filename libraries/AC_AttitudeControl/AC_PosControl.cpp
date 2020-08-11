@@ -797,6 +797,7 @@ void AC_PosControl::init_xy_controller()
 }
 
 /// update_xy_controller - run the horizontal position controller - should be called at 100hz or higher
+/// update_xy_controller-运行水平位置控制器-应在100hz或更高的频率下调用
 void AC_PosControl::update_xy_controller(float ekfNavVelGainScaler)
 {
     // compute dt
@@ -809,18 +810,23 @@ void AC_PosControl::update_xy_controller(float ekfNavVelGainScaler)
     }
 
     // check for ekf xy position reset
+    //检查ekf xy位置重置
     check_for_ekf_xy_reset();
 
     // check if xy leash needs to be recalculated
+    //检查xy皮带是否需要重新计算
     calc_leash_length_xy();
 
     // translate any adjustments from pilot to loiter target
+    //将所有调整从飞行员目标转换为游击队员目标
     desired_vel_to_pos(dt);
 
     // run horizontal position controller
+    //运行水平位置控制器
     run_xy_controller(dt, ekfNavVelGainScaler);
 
     // update xy update time
+    //更新xy更新时间
     _last_update_xy_us = now_us;
 }
 
@@ -997,23 +1003,32 @@ void AC_PosControl::desired_vel_to_pos(float nav_dt)
 ///     desired velocity (_vel_desired) is combined into final target velocity
 ///     converts desired velocities in lat/lon directions to accelerations in lat/lon frame
 ///     converts desired accelerations provided in lat/lon frame to roll/pitch angles
+///运行水平位置控制器以校正位置和速度
+///将位置（_pos_target）转换为目标速度（_vel_target）
+///期望速度（_vel_desired）被组合为最终目标速度
+///将所需的经纬度速度转换为经纬度帧中的加速度
+///将纬度/经度帧中提供的所需加速度转换为横滚/俯仰角
 void AC_PosControl::run_xy_controller(float dt, float ekfNavVelGainScaler)
 {
     Vector3f curr_pos = _inav.get_position();
     float kP = ekfNavVelGainScaler * _p_pos_xy.kP(); // scale gains to compensate for noisy optical flow measurement in the EKF
 
-    // avoid divide by zero
+    // avoid divide by zero 避免除以零
     if (kP <= 0.0f) {
         _vel_target.x = 0.0f;
         _vel_target.y = 0.0f;
     }else{
         // calculate distance error
+        //计算距离误差
         _pos_error.x = _pos_target.x - curr_pos.x;
         _pos_error.y = _pos_target.y - curr_pos.y;
 
         // Constrain _pos_error and target position
         // Constrain the maximum length of _vel_target to the maximum position correction velocity
         // TODO: replace the leash length with a user definable maximum position correction
+        //限制_pos_error和目标位置
+        //将_vel_target的最大长度限制为最大位置校正速度
+        // TODO：使用用户可定义的最大位置校正来代替皮带长度
         if (limit_vector_length(_pos_error.x, _pos_error.y, _leash))
         {
             _pos_target.x = curr_pos.x + _pos_error.x;
@@ -1025,11 +1040,12 @@ void AC_PosControl::run_xy_controller(float dt, float ekfNavVelGainScaler)
     }
 
     // add velocity feed-forward
+    //添加速度前馈
     _vel_target.x += _vel_desired.x;
     _vel_target.y += _vel_desired.y;
 
     // the following section converts desired velocities in lat/lon directions to accelerations in lat/lon frame
-
+    //以下部分将纬/经方向上的所需速度转换为纬/经帧中的加速度
     Vector2f accel_target, vel_xy_p, vel_xy_i, vel_xy_d;
 
     // check if vehicle velocity is being overridden

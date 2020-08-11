@@ -220,10 +220,10 @@ void Copter::loop()
 // Main loop - 400hz
 void Copter::fast_loop()
 {
-    // update INS immediately to get current gyro data populated
+    // update INS immediately to get current gyro data populated 更新惯性导航
     ins.update();
 
-    // run low level rate controllers that only require IMU data
+    // run low level rate controllers that only require IMU data 控制器
     attitude_control->rate_controller_run();
 
     // send outputs to the motors library immediately
@@ -244,7 +244,7 @@ void Copter::fast_loop()
     // check if ekf has reset target heading or position
     check_ekf_reset();
 
-    // run the attitude controllers
+    // run the attitude controllers 飞行模式
     update_flight_mode();
 
     // update home from EKF if necessary

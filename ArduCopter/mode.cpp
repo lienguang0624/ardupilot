@@ -167,6 +167,10 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
 // optional force parameter used to force the flight mode change (used only first time mode is set)
 // returns true if mode was successfully set
 // ACRO, STABILIZE, ALTHOLD, LAND, DRIFT and SPORT can always be set successfully but the return state of other flight modes should be checked and the caller should deal with failures appropriately
+// set_mode-更改飞行模式并执行任何必要的初始化可选的强制参数，
+// 以强制更改飞行模式（仅设置了首次模式），如果成功设置了模式，
+// 则ACRO，STABILIZE，ALTHOLD，LAND，DRIFT和SPORT可以返回true 总是成功设置，
+// 但应检查其他飞行模式的返回状态，并且呼叫者应适当地处理故障
 bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
 {
 
@@ -176,7 +180,7 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
         return true;
     }
 
-    Copter::Mode *new_flightmode = mode_from_mode_num(mode);
+    Copter::Mode *new_flightmode = mode_from_mode_num(mode);// 根据模式数字返回模式对象
     if (new_flightmode == nullptr) {
         gcs().send_text(MAV_SEVERITY_WARNING,"No such mode");
         Log_Write_Error(ERROR_SUBSYSTEM_FLIGHT_MODE,mode);
@@ -185,6 +189,7 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
 
     bool ignore_checks = !motors->armed();   // allow switching to any mode if disarmed.  We rely on the arming check to perform
 
+// 安全判断
 #if FRAME_CONFIG == HELI_FRAME
     // do not allow helis to enter a non-manual throttle mode if the
     // rotor runup is not complete

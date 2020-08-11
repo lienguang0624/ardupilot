@@ -214,11 +214,12 @@ void AC_Loiter::update(float ekfGndSpdLimit, float ekfNavVelGainScaler)
     }
 
     // initialise pos controller speed and acceleration
+    // 初始化POS控制器的速度和加速度
     _pos_control.set_speed_xy(_speed_cms);
     _pos_control.set_accel_xy(_accel_cmss);
 
-    calc_desired_velocity(dt,ekfGndSpdLimit);
-    _pos_control.update_xy_controller(ekfNavVelGainScaler);
+    calc_desired_velocity(dt,ekfGndSpdLimit);//计算目标速度
+    _pos_control.update_xy_controller(ekfNavVelGainScaler);//更新水平方向控制器
 }
 
 // sanity check parameters
