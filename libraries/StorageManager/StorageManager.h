@@ -39,7 +39,7 @@
 #endif
 
 /*
-  The StorageManager holds the layout of non-volatile storeage
+  The StorageManager holds the layout of non-volatile storeage StorageManager保存非易失性存储的布局
  */
 class StorageManager {
     friend class StorageAccess;

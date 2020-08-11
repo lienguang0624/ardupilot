@@ -75,6 +75,7 @@ void Copter::print_enabled(bool b)
 
 void Copter::report_version()
 {
+    // console¿ØÖÆÌ¨Êä³ö
     hal.console->printf("FW Ver: %d\n",(int)(g.k_format_version));
     print_divider();
     print_blanks(2);

@@ -56,7 +56,7 @@ extern const AP_HAL::HAL &hal;
 // static member variables for AP_Param.
 //
 
-// number of rows in the _var_info[] table
+// number of rows in the _var_info[] table _var_info []表中的行数
 uint16_t AP_Param::_num_vars;
 
 // cached parameter count
@@ -348,7 +348,7 @@ bool AP_Param::adjust_group_offset(uint16_t vindex, const struct GroupInfo &grou
 }
 
 /*
-  get the base pointer for a variable, accounting for AP_PARAM_FLAG_POINTER
+  get the base pointer for a variable, accounting for AP_PARAM_FLAG_POINTER 获取变量的基本指针，占AP_PARAM_FLAG_POINTER
  */
 bool AP_Param::get_base(const struct Info &info, ptrdiff_t &base)
 {
@@ -1258,7 +1258,7 @@ void AP_Param::setup_sketch_defaults(void)
         uint8_t type = _var_info[i].type;
         if (type <= AP_PARAM_FLOAT) {
             ptrdiff_t base;
-            if (get_base(_var_info[i], base)) {
+            if (get_base(_var_info[i], base)) {//判断是否成功获取变量指针
                 set_value((enum ap_var_type)type, (void*)base,
                           get_default_value((const AP_Param *)base, &_var_info[i].def_value));
             }
@@ -2044,6 +2044,7 @@ void AP_Param::load_embedded_param_defaults(bool last_pass)
 
 /* 
    find a default value given a pointer to a default value in flash
+   查找给定Flash中默认值的指针的默认值
  */
 float AP_Param::get_default_value(const AP_Param *vp, const float *def_value_ptr)
 {

@@ -14,6 +14,11 @@ public:
     // The increment will prevent old parameters from being used incorrectly
     // by newer code.
     //
+    //参数enum描述的布局版本。
+    //
+    //当以不兼容的方式更改参数enum时，该值应增加1。
+    //
+    //增量将防止较新的代码错误地使用旧参数。
     static const uint16_t        k_format_version = 120;
 
     // Parameter identities.

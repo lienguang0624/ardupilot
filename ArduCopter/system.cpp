@@ -20,12 +20,13 @@ static void failsafe_check_static()
 
 void Copter::init_ardupilot()
 {
-    // initialise serial port
+    // initialise serial port 初始化串口
     serial_manager.init_console();
 
     // init vehicle capabilties
+    // 初始化车辆功能 （四旋翼在FMUV2上的参数）
     init_capabilities();
-
+    // 控制台输出
     hal.console->printf("\n\nInit %s"
                         "\n\nFree RAM: %u\n",
                         AP::fwversion().fw_string,
@@ -33,6 +34,7 @@ void Copter::init_ardupilot()
 
     //
     // Report firmware version code expect on console (check of actual EEPROM format version is done in load_parameters function)
+    //报告控制台上期望的固件版本代码（检查实际的EEPROM格式版本是在load_parameters函数中完成的）
     //
     report_version();
 

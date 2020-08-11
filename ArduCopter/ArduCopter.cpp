@@ -199,9 +199,11 @@ constexpr int8_t Copter::_failsafe_priorities[7];
 void Copter::setup()
 {
     // Load the default values of variables listed in var_info[]s 加载var_info [] s中列出的变量的默认值
+    // AP_Param类：变量命名
     AP_Param::setup_sketch_defaults();
 
     // setup storage layout for copter 设置直升机的存储布局
+    // StorageManager类：保存非易失性存储的布局
     StorageManager::set_layout_copter();
 
     init_ardupilot();

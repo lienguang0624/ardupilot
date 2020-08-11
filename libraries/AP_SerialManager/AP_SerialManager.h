@@ -85,8 +85,8 @@ public:
         SerialProtocol_None = -1,
         SerialProtocol_Console = 0, // unused
         SerialProtocol_MAVLink = 1,
-        SerialProtocol_MAVLink2 = 2,                 // do not use - use MAVLink and provide instance of 1
-        SerialProtocol_FrSky_D = 3,                  // FrSky D protocol (D-receivers)
+        SerialProtocol_MAVLink2 = 2,                 // do not use - use MAVLink and provide instance of 1 //不使用-使用MAVLink并提供实例1
+        SerialProtocol_FrSky_D = 3,                  // FrSky D protocol (D-receivers) // FrSky D协议（D接收器）
         SerialProtocol_FrSky_SPort = 4,              // FrSky SPort protocol (X-receivers)
         SerialProtocol_GPS = 5,
         SerialProtocol_GPS2 = 6,                     // do not use - use GPS and provide instance of 1
@@ -143,7 +143,7 @@ public:
 private:
     static AP_SerialManager *_instance;
     
-    // array of uart info
+    // array of uart info uart信息数组
     struct UARTState {
         AP_Int8 protocol;
         AP_Int32 baud;
