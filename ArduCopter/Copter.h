@@ -212,6 +212,7 @@ private:
     ParametersG2 g2;
 
     // main loop scheduler
+    //主循环调度器
     AP_Scheduler scheduler{FUNCTOR_BIND_MEMBER(&Copter::fast_loop, void)};
 
     // AP_Notify instance

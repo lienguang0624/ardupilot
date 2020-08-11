@@ -92,6 +92,7 @@ AP_Scheduler *AP_Scheduler::get_instance()
 }
 
 // initialise the scheduler
+//初始化调度程序
 void AP_Scheduler::init(const AP_Scheduler::Task *tasks, uint8_t num_tasks, uint32_t log_performance_bit)
 {
     _tasks = tasks;
@@ -101,6 +102,7 @@ void AP_Scheduler::init(const AP_Scheduler::Task *tasks, uint8_t num_tasks, uint
     _tick_counter = 0;
 
     // setup initial performance counters
+    //设置初始性能计数器
     perf_info.set_loop_rate(get_loop_rate_hz());
     perf_info.reset();
 
@@ -233,6 +235,7 @@ float AP_Scheduler::load_average()
 void AP_Scheduler::loop()
 {
     // wait for an INS sample
+	//等待INS样本
     AP::ins().wait_for_sample();
 
     const uint32_t sample_time_us = AP_HAL::micros();
@@ -258,6 +261,8 @@ void AP_Scheduler::loop()
     // in multiples of the main loop tick. So if they don't run on
     // the first call to the scheduler they won't run on a later
     // call until scheduler.tick() is called again
+    // 运行所有应运行的任务。 注意，每个任务只需要调用一次，因为任务是按主循环周期的倍数进行调度的。
+    // 因此，如果在第一次调用调度程序时不运行它们，则在再次调用scheduler.tick（）之前，它们将不会在以后的调用中运行。
     const uint32_t loop_us = get_loop_period_us();
     const uint32_t time_available = (sample_time_us + loop_us) - AP_HAL::micros();
     run(time_available > loop_us ? 0u : time_available);
