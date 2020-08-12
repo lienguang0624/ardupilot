@@ -1270,11 +1270,13 @@ void AP_InertialSensor::_save_gyro_calibration()
 
 /*
   update gyro and accel values from backends
+  从后端更新陀螺仪和加速值
  */
 void AP_InertialSensor::update(void)
 {
     // during initialisation update() may be called without
     // wait_for_sample(), and a wait is implied
+	//在初始化期间，可以在没有wait_for_sample（）的情况下调用update（），这意味着需要等待
     wait_for_sample();
 
     if (!_hil_mode) {
@@ -1380,13 +1382,20 @@ void AP_InertialSensor::update(void)
   sample. We want that to be a constant time if possible, but if
   delays occur we need to cope with them. The long term sum of
   _delta_time should be exactly equal to the wall clock elapsed time
+  等待提供样品。 该功能确定ardupilot中主循环的时序。
+
+   理想情况下，此函数将完全按照AP_InertialSensor :: init（）的sample_rate参数给定的速率返回。
+
+   此函数的关键输出是_delta_time，这是此示例将发生陀螺仪和加速度积分的时间。 如果可能，我们希望这是一个恒定的时间，
+   但是如果出现延迟，我们需要应对它们。 _delta_time的长期总和应完全等于挂钟经过的时间
  */
 void AP_InertialSensor::wait_for_sample(void)
 {
     if (_have_sample) {
         // the user has called wait_for_sample() again without
         // consuming the sample with update()
-        return;
+    	//用户再次调用了wait_for_sample（），而没有使用update（）使用该示例
+    	return;
     }
 
     uint32_t now = AP_HAL::micros();

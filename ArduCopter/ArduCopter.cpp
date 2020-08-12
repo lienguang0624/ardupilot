@@ -225,13 +225,16 @@ void Copter::fast_loop()
     // update INS immediately to get current gyro data populated 更新惯性导航
     ins.update();
 
-    // run low level rate controllers that only require IMU data 控制器
+    // run low level rate controllers that only require IMU data
+    //运行仅需要IMU数据的低速率控制器
     attitude_control->rate_controller_run();
 
     // send outputs to the motors library immediately
+    //立即将输出发送到电机库
     motors_output();
 
     // run EKF state estimator (expensive)
+    //运行EKF状态估算器（昂贵）
     // --------------------
     read_AHRS();
 
@@ -240,27 +243,34 @@ void Copter::fast_loop()
 #endif //HELI_FRAME
 
     // Inertial Nav
+    //惯性导航
     // --------------------
     read_inertia();
 
     // check if ekf has reset target heading or position
+    //检查ekf是否已重置目标航向或位置
     check_ekf_reset();
 
-    // run the attitude controllers 飞行模式
+    // run the attitude controllers
+    //运行姿态控制器
     update_flight_mode();
 
     // update home from EKF if necessary
+    //如有必要，从EKF更新主页
     update_home_from_EKF();
 
     // check if we've landed or crashed
+    //检查我们是否降落或坠毁
     update_land_and_crash_detectors();
 
 #if MOUNT == ENABLED
     // camera mount's fast update
+    //相机座的快速更新
     camera_mount.update_fast();
 #endif
 
     // log sensor health
+    //记录传感器健康状况
     if (should_log(MASK_LOG_ANY)) {
         Log_Sensor_Health();
     }
