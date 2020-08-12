@@ -1279,11 +1279,12 @@ void AP_InertialSensor::update(void)
 	//在初始化期间，可以在没有wait_for_sample（）的情况下调用update（），这意味着需要等待
     wait_for_sample();
 
-    if (!_hil_mode) {
+    if (!_hil_mode) {//如果传感器有问题
         for (uint8_t i=0; i<INS_MAX_INSTANCES; i++) {
             // mark sensors unhealthy and let update() in each backend
             // mark them healthy via _publish_gyro() and
             // _publish_accel()
+        	//将传感器标记为不健康，并通过_publish_gyro（）和_publish_accel（）将每个后端中的update（）标记为健康
             _gyro_healthy[i] = false;
             _accel_healthy[i] = false;
             _delta_velocity_valid[i] = false;
@@ -1402,14 +1403,17 @@ void AP_InertialSensor::wait_for_sample(void)
 
     if (_next_sample_usec == 0 && _delta_time <= 0) {
         // this is the first call to wait_for_sample()
+    	//这是对wait_for_sample（）的第一次调用
         _last_sample_usec = now - _sample_period_usec;
         _next_sample_usec = now + _sample_period_usec;
         goto check_sample;
     }
 
     // see how long it is till the next sample is due
+    //查看到下一个样本到期需要多长时间
     if (_next_sample_usec - now <=_sample_period_usec) {
         // we're ahead on time, schedule next sample at expected period
+    	//我们很准时，请在预期的时间安排下一个样品
         uint32_t wait_usec = _next_sample_usec - now;
         hal.scheduler->delay_microseconds_boost(wait_usec);
         uint32_t now2 = AP_HAL::micros();
