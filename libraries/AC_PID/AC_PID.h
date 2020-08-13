@@ -77,6 +77,7 @@ public:
     void        set_integrator(float i) { _integrator = i; }
 
     // set the designed rate (for logging purposes)
+    //设置设计速率（用于记录目的）
     void        set_desired_rate(float desired) { _pid_info.desired = desired; }
 
     const       DataFlash_Class::PID_Info& get_pid_info(void) const { return _pid_info; }

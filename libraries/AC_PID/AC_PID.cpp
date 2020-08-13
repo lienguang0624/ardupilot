@@ -109,14 +109,17 @@ void AC_PID::set_input_filter_all(float input)
 // set_input_filter_d - set input to PID controller
 //  only input to the D portion of the controller is filtered
 //  this should be called before any other calls to get_p, get_i or get_d
+// set_input_filter_d-将输入设置为PID控制器，仅过滤对控制器D部分的输入，应在对get_p，get_i或get_d进行任何其他调用之前对其进行调用
 void AC_PID::set_input_filter_d(float input)
 {
     // don't process inf or NaN
+    //不处理inf或NaN
     if (!isfinite(input)) {
         return;
     }
 
     // reset input filter to value received
+    //将输入过滤器重置为接收到的值
     if (_flags._reset_filter) {
         _flags._reset_filter = false;
         _input = input;
@@ -124,6 +127,7 @@ void AC_PID::set_input_filter_d(float input)
     }
 
     // update filter and calculate derivative
+    //更新过滤器并计算导数
     if (_dt > 0.0f) {
         float derivative = (input - _input) / _dt;
         _derivative = _derivative + get_filt_alpha() * (derivative-_derivative);
@@ -134,14 +138,14 @@ void AC_PID::set_input_filter_d(float input)
 
 float AC_PID::get_p()
 {
-    _pid_info.P = (_input * _kp);
+    _pid_info.P = (_input * _kp);//经过计算后的PID里面的P,误差*系数Kp
     return _pid_info.P;
 }
 
 float AC_PID::get_i()
 {
     if(!is_zero(_ki) && !is_zero(_dt)) {
-        _integrator += ((float)_input * _ki) * _dt;
+        _integrator += ((float)_input * _ki) * _dt;//经过计算后的PID里面的I，误差*系数Ki再做累加
         if (_integrator < -_imax) {
             _integrator = -_imax;
         } else if (_integrator > _imax) {
@@ -156,7 +160,7 @@ float AC_PID::get_i()
 float AC_PID::get_d()
 {
     // derivative component
-    _pid_info.D = (_kd * _derivative);
+    _pid_info.D = (_kd * _derivative);//经过计算后的PID里面的D，误差的微分*系数Kd
     return _pid_info.D;
 }
 

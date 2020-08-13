@@ -24,6 +24,9 @@
 
 // NOTE!! these rotation values are stored to EEPROM, so be careful not to
 // change the numbering of any existing entry when adding a new entry.
+//这些轮换构成一个完整的集合-以下列表中的每个轮换与列表中的另一个轮换组合时，也会形成一个也在列表中的条目。 这是重要的属性。 如果添加到列表中，请运行旋转测试套件。
+
+// 注意！！ 这些旋转值存储在EEPROM中，因此在添加新条目时请注意不要更改任何现有条目的编号。
 enum Rotation : uint8_t {
     ROTATION_NONE                = 0,
     ROTATION_YAW_45              = 1,

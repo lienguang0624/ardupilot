@@ -295,12 +295,14 @@ void Copter::init_disarm_motors()
 }
 
 // motors_output - send output to motors library which will adjust and send to ESCs and servos
+// motors_output-将输出发送到电机库，该库将进行调整并发送到ESC和伺服器
 void Copter::motors_output()
 {
 #if ADVANCED_FAILSAFE == ENABLED
     // this is to allow the failsafe module to deliberately crash
     // the vehicle. Only used in extreme circumstances to meet the
     // OBC rules
+    //这是为了允许故障安全模块故意使车辆坠毁。 仅在满足OBC规则的极端情况下使用
     if (g2.afs.should_crash_vehicle()) {
         g2.afs.terminate_vehicle();
         return;
@@ -308,41 +310,51 @@ void Copter::motors_output()
 #endif
 
     // Update arming delay state
+    //更新布防延迟状态
     if (ap.in_arming_delay && (!motors->armed() || millis()-arm_time_ms > ARMING_DELAY_SEC*1.0e3f || control_mode == THROW)) {
         ap.in_arming_delay = false;
     }
 
-    // output any servo channels
+    // output any servo channels RMS
+    //输出任何伺服通道,并将将缩放后的输出转换为pwm值
     SRV_Channels::calc_pwm();
 
     // cork now, so that all channel outputs happen at once
+    //现在进行软木塞，以便所有通道输出一次发生
+    //延迟对底层硬件的后续对write（）的调用，以便将相关的写入分组在一起。 完成所有需要的写操作后，调用push（）提交更改。
     SRV_Channels::cork();
 
     // update output on any aux channels, for manual passthru
+    //更新任何辅助通道上的输出，以进行手动通过
     SRV_Channels::output_ch_all();
 
     // check if we are performing the motor test
+    //检查我们是否正在执行电机测试
     if (ap.motor_test) {
         motor_test_output();
     } else {
+        //interlock = motors->armed() 检查电机是否撤防
         bool interlock = motors->armed() && !ap.in_arming_delay && (!ap.using_interlock || ap.motor_interlock_switch) && !ap.motor_emergency_stop;
         if (!motors->get_interlock() && interlock) {
-            motors->set_interlock(true);
-            Log_Write_Event(DATA_MOTORS_INTERLOCK_ENABLED);
+            motors->set_interlock(true);//将电机互锁状态设置为True
+            Log_Write_Event(DATA_MOTORS_INTERLOCK_ENABLED);//写入日志
         } else if (motors->get_interlock() && !interlock) {
-            motors->set_interlock(false);
+            motors->set_interlock(false);//将电机互锁状态设置为False
             Log_Write_Event(DATA_MOTORS_INTERLOCK_DISABLED);
         }
 
         // send output signals to motors
+        //将输出信号发送到电机
         motors->output();
     }
 
     // push all channels
+    //推送所有频道
     SRV_Channels::push();
 }
 
 // check for pilot stick input to trigger lost vehicle alarm
+//检查操纵杆输入是否触发丢失的车辆警报
 void Copter::lost_vehicle_check()
 {
     static uint8_t soundalarm_counter;

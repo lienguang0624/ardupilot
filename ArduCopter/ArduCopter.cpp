@@ -222,12 +222,16 @@ void Copter::loop()
 // Main loop - 400hz
 void Copter::fast_loop()
 {
-    // update INS immediately to get current gyro data populated 更新惯性导航
+    // update INS immediately to get current gyro data populated 更新惯性导航，获得_publish_gyro（）和_publish_accel（）给予前端调用
+    //输出：
+    //_publish_gyro（）：旋转陀螺仪矢量
+    //_publish_accel（）：旋转加速度矢量
     ins.update();
 
     // run low level rate controllers that only require IMU data
     //运行仅需要IMU数据的低速率控制器
-    attitude_control->rate_controller_run();
+    //分别对三个欧拉角进行PID控制
+    attitude_control->rate_controller_run();//计算目标油门与当前油门差值，在当前油门基础上输出给定油门
 
     // send outputs to the motors library immediately
     //立即将输出发送到电机库

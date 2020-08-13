@@ -91,9 +91,9 @@ public:
     ///
     void init_gyro(void);
 
-    /// Fetch the current gyro values
+    /// Fetch the current gyro values 获取当前陀螺仪值
     ///
-    /// @returns	vector of rotational rates in radians/sec
+    /// @returns	vector of rotational rates in radians/sec 弧度/秒的旋转速度矢量
     ///
     const Vector3f     &get_gyro(uint8_t i) const { return _gyro[i]; }
     const Vector3f     &get_gyro(void) const { return get_gyro(_primary_gyro); }
@@ -372,11 +372,13 @@ private:
     void _save_gyro_calibration();
 
     // backend objects
+    //后端对象
     AP_InertialSensor_Backend *_backends[INS_MAX_BACKENDS];
 
     // number of gyros and accel drivers. Note that most backends
     // provide both accel and gyro data, so will increment both
     // counters on initialisation
+    //陀螺仪和加速驱动器的数量。 请注意，大多数后端都提供加速度和陀螺仪数据，因此初始化时将同时增加两个计数器
     uint8_t _gyro_count;
     uint8_t _accel_count;
     uint8_t _backend_count;
@@ -529,6 +531,7 @@ private:
     uint32_t _sample_period_usec;
 
     // last time update() completed
+    //上一次update（）完成
     uint32_t _last_update_usec;
 
     // health of gyros and accels
@@ -573,6 +576,7 @@ private:
     void _acal_event_failure();
 
     // Returns AccelCalibrator objects pointer for specified acceleromter
+    //返回指定加速度计的Accel Calibration对象指针
     AccelCalibrator* _acal_get_calibrator(uint8_t i) { return i<get_accel_count()?&(_accel_calibrator[i]):nullptr; }
 
     float _trim_pitch;
@@ -582,6 +586,7 @@ private:
     bool _accel_cal_requires_reboot;
 
     // sensor error count at startup (used to ignore errors within 2 seconds of startup)
+    //传感器在启动时的错误计数（用于在启动后2秒钟内忽略错误）
     uint32_t _accel_startup_error_count[INS_MAX_INSTANCES];
     uint32_t _gyro_startup_error_count[INS_MAX_INSTANCES];
     bool _startup_error_counts_set;

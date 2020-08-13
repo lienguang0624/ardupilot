@@ -11,6 +11,12 @@
 //
 // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 ///
+//警告警告警告警告警告警告警告警告警告警告
+//
+//请勿编辑此文件以调整您的配置。 创建自己的
+// APM_Config.h并使用APM_Config.h.example作为参考。
+//
+//警告警告警告警告警告警告警告警告警告警告
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -20,11 +26,22 @@
 //
 // - Try to keep this file organised in the same order as APM_Config.h.example
 //
+//默认和自动配置详细信息。
+//
+//维护人员注意事项：
+//
+//-尝试以与APM_Config.h.example相同的顺序来组织此文件
+//
+
 #include "defines.h"
 
 ///
 /// DO NOT EDIT THIS INCLUDE - if you want to make a local change, make that
 /// change in your local copy of APM_Config.h.
+///
+///
+///请勿编辑此内容-如果要进行本地更改，请进行更改
+///更改您的APM_Config.h本地副本。
 ///
 #include "APM_Config.h"
 
@@ -32,6 +49,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 // HARDWARE CONFIGURATION AND CONNECTIONS
+//硬件配置和连接
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +59,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HIL_MODE                                 OPTIONAL
+///////////////////////////////////////////////////// /////////////////////////////
+// HIL_MODE可选
 
 #ifndef HIL_MODE
  #define HIL_MODE        HIL_MODE_DISABLED
@@ -61,6 +81,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 // TradHeli defaults
+// TradHeli默认值
 #if FRAME_CONFIG == HELI_FRAME
   # define RC_FAST_SPEED                        125
   # define WP_YAW_BEHAVIOR_DEFAULT              WP_YAW_BEHAVIOR_LOOK_AHEAD
@@ -85,22 +106,27 @@
 #endif
 
 #ifndef RANGEFINDER_HEALTH_MAX
+//表示测距仪健康的良好阅读次数
  # define RANGEFINDER_HEALTH_MAX 3          // number of good reads that indicates a healthy rangefinder
 #endif
 
 #ifndef RANGEFINDER_GAIN_DEFAULT
+//用于控制测距仪范围调整目标高度的速度的增益（降低表示反应速度降低）
  # define RANGEFINDER_GAIN_DEFAULT 0.8f     // gain for controlling how quickly rangefinder range adjusts target altitude (lower means slower reaction)
 #endif
 
 #ifndef THR_SURFACE_TRACKING_VELZ_MAX
+//使用测距仪跟踪表面时的最大垂直速度变化
  # define THR_SURFACE_TRACKING_VELZ_MAX 150 // max vertical speed change while surface tracking with rangefinder
 #endif
 
 #ifndef RANGEFINDER_TIMEOUT_MS
+//在没有良好的测距仪alt的情况下经过这么多毫秒后，所需的测距仪alt将重置为当前的测距仪alt
  # define RANGEFINDER_TIMEOUT_MS  1000      // desired rangefinder alt will reset to current rangefinder alt after this many milliseconds without a good rangefinder alt
 #endif
 
 #ifndef RANGEFINDER_WPNAV_FILT_HZ
+//提供给航点导航类的测距仪高度的滤波器频率
  # define RANGEFINDER_WPNAV_FILT_HZ   0.25f // filter frequency for rangefinder altitude provided to waypoint navigation class
 #endif
 

@@ -160,9 +160,12 @@ const AP_Param::GroupInfo AP_AHRS::var_info[] = {
 };
 
 // return a smoothed and corrected gyro vector using the latest ins data (which may not have been consumed by the EKF yet)
+//使用最新的ins数据返回平滑和校正的陀螺仪矢量（EKF可能尚未使用过）
 Vector3f AP_AHRS::get_gyro_latest(void) const
 {
-    const uint8_t primary_gyro = get_primary_gyro_index();
+    const uint8_t primary_gyro = get_primary_gyro_index();//获取当前主陀螺仪传感器的索引
+    //get_gyro： 获取当前陀螺仪值
+    //get_gyro_drift：返回陀螺仪漂移的当前估算值
     return AP::ins().get_gyro(primary_gyro) + get_gyro_drift();
 }
 

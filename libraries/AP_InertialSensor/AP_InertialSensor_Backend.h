@@ -52,6 +52,7 @@ public:
      * Update the sensor data. Called by the frontend to transfer
      * accumulated sensor readings to the frontend structure via the
      * _publish_gyro() and _publish_accel() functions
+     * *更新传感器数据。 由前端调用，以通过_publish_gyro（）和_publish_accel（）函数将累积的传感器读数传输到前端结构
      */
     virtual bool update() = 0;
 

@@ -70,6 +70,7 @@ public:
     void                armed(bool arm);
 
     // set motor interlock status
+    //ÉèÖÃµç»ú»¥Ëø×´Ì¬
     void                set_interlock(bool set) { _flags.interlock = set;}
 
     // get motor interlock status.  true means motors run, false motors don't run

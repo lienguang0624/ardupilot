@@ -825,20 +825,45 @@ float AC_AttitudeControl::rate_target_to_motor_roll(float rate_actual_rads, floa
     float rate_error_rads = rate_target_rads - rate_actual_rads;
 
     // pass error to PID controller
-    get_rate_roll_pid().set_input_filter_d(rate_error_rads);
-    get_rate_roll_pid().set_desired_rate(rate_target_rads);
+    //将误差传递给PID控制器
 
+    //输入：
+    //rate_error_rads:角速度误差
+    //输出：
+    //_derivative：当前PID中的D
+    //_input:作为PID系统中的输入
+    get_rate_roll_pid().set_input_filter_d(rate_error_rads);
+
+    //输入：
+    //rate_target_rads:目标角速度
+    //输出：
+    //_pid_info.desired：将目标角速度记录在案
+    get_rate_roll_pid().set_desired_rate(rate_target_rads);//设置目标速率并记录下来，返回_pid_info.desired = rate_target_rads
+
+    //输出：
+    //integrator：当前PID中的I
     float integrator = get_rate_roll_pid().get_integrator();
 
     // Ensure that integrator can only be reduced if the output is saturated
+    //确保仅在输出饱和时才能减小积分器
     if (!_motors.limit.roll_pitch || ((is_positive(integrator) && is_negative(rate_error_rads)) || (is_negative(integrator) && is_positive(rate_error_rads)))) {
-        integrator = get_rate_roll_pid().get_i();
+        integrator = get_rate_roll_pid().get_i();//本条语句即为在特殊情况下直接读取_pid_info.I作为当前PID中的I
     }
 
     // Compute output in range -1 ~ +1
+    //计算输出范围-1~+1
+
+    //输入：
+    //get_rate_roll_pid().get_p():   经过计算后的PID里面的P,_pid_info.P = (_input * _kp) 误差*系数Kp
+    //integrator：                                      经过计算后的PID里面的I,_pid_info.I = _integrator    ,_integrator += ((float)_input * _ki) * _dt;误差*系数Ki再做累加
+    //get_rate_roll_pid().get_d():   经过计算后的PID里面的D,_pid_info.D = (_kd * _derivative) 误差的微分*系数Kd
+    //_input:                        作为PID系统中的输入
+    //get_rate_roll_pid().get_ff(rate_target_rads)：_pid_info.FF = (float)requested_rate * _ff;目标角速度*系数
+    //输出：
+    //output:油门输出？ 输出范围-1~+1
     float output = get_rate_roll_pid().get_p() + integrator + get_rate_roll_pid().get_d() + get_rate_roll_pid().get_ff(rate_target_rads);
 
-    // Constrain output
+    // Constrain output 限幅
     return constrain_float(output, -1.0f, 1.0f);
 }
 

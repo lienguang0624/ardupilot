@@ -72,8 +72,9 @@ void AP_AHRS_View::update(bool skip_ins_update)
 }
 
 // return a smoothed and corrected gyro vector using the latest ins data (which may not have been consumed by the EKF yet)
+//使用最新的ins数据（可能尚未被EKF使用）返回经过平滑和校正的陀螺仪矢量
 Vector3f AP_AHRS_View::get_gyro_latest(void) const {
-    Vector3f gyro_latest = ahrs.get_gyro_latest();
+    Vector3f gyro_latest = ahrs.get_gyro_latest();//使用最新的ins数据返回平滑和校正的陀螺仪矢量
     gyro_latest.rotate(rotation);
     return gyro_latest;
 }

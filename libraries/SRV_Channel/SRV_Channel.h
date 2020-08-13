@@ -121,7 +121,7 @@ public:
         k_dspoilerLeft2         = 86,           ///< differential spoiler 2 (left wing)
         k_dspoilerRight2        = 87,           ///< differential spoiler 2 (right wing)
         k_winch                 = 88,
-        k_nr_aux_servo_functions         ///< This must be the last enum value (only add new values _before_ this one)
+        k_nr_aux_servo_functions         ///< This must be the last enum value (only add new values _before_ this one)/// <这必须是最后一个枚举值（只能在此之前添加新值）
     } Aux_servo_function_t;
 
     // used to get min/max/trim limit value based on reverse
@@ -223,6 +223,7 @@ private:
     uint16_t pwm_from_angle(int16_t scaled_value) const;
 
     // convert a scaled output to a pwm value
+    //将缩放后的输出转换为pwm值
     void calc_pwm(int16_t output_scaled);
 
     // output value based on function
@@ -247,26 +248,32 @@ private:
 
 /*
   class	SRV_Channels
+  SRV_Channels类
 */
 class SRV_Channels {
 public:
     friend class SRV_Channel;
 
     // constructor
+    //构造函数
     SRV_Channels(void);
 
     static const struct AP_Param::GroupInfo var_info[];
 
     // set the default function for a channel
+    //设置频道的默认功能
     static void set_default_function(uint8_t chan, SRV_Channel::Aux_servo_function_t function);
 
     // set output value for a function channel as a pwm value
+    //将功能通道的输出值设置为pwm值
     static void set_output_pwm(SRV_Channel::Aux_servo_function_t function, uint16_t value);
 
     // set output value for a function channel as a pwm value on the first matching channel
+    //将功能通道的输出值设置为第一个匹配通道上的pwm值
     static void set_output_pwm_first(SRV_Channel::Aux_servo_function_t function, uint16_t value);
 
     // set output value for a specific function channel as a pwm value
+    //将特定功能通道的输出值设置为pwm值
     static void set_output_pwm_chan(uint8_t chan, uint16_t value);
 
     // set output value for a function channel as a scaled value. This
@@ -403,6 +410,7 @@ public:
     static void constrain_pwm(SRV_Channel::Aux_servo_function_t function);
 
     // calculate PWM for all channels
+    //计算所有通道的PWM
     static void calc_pwm(void);
 
     static SRV_Channel *srv_channel(uint8_t i) {
@@ -466,6 +474,7 @@ private:
         SRV_Channel::servo_mask_t channel_mask;
 
         // scaled output for this function
+        //此函数的缩放输出
         int16_t output_scaled;
     } functions[SRV_Channel::k_nr_aux_servo_functions];
 

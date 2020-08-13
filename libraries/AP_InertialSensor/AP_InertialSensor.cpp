@@ -1291,10 +1291,11 @@ void AP_InertialSensor::update(void)
             _delta_angle_valid[i] = false;
         }
         for (uint8_t i=0; i<_backend_count; i++) {
-            _backends[i]->update();
+            _backends[i]->update();//更新传感器数据。 由前端调用，以通过_publish_gyro（）和_publish_accel（）函数将累积的传感器读数传输到前端结构
         }
 
         // clear accumulators
+        //清除累加器
         for (uint8_t i = 0; i < INS_MAX_INSTANCES; i++) {
             _delta_velocity_acc[i].zero();
             _delta_velocity_acc_dt[i] = 0;
@@ -1326,6 +1327,7 @@ void AP_InertialSensor::update(void)
 
         // adjust health status if a sensor has a non-zero error count
         // but another sensor doesn't.
+        //如果一个传感器的错误计数非零，但另一个传感器没有，则调整健康状态。
         bool have_zero_accel_error_count = false;
         bool have_zero_gyro_error_count = false;
         for (uint8_t i=0; i<INS_MAX_INSTANCES; i++) {
@@ -1349,6 +1351,7 @@ void AP_InertialSensor::update(void)
         }
 
         // set primary to first healthy accel and gyro
+        //将主要对象设置为第一个健康的加速度和陀螺
         for (uint8_t i=0; i<INS_MAX_INSTANCES; i++) {
             if (_gyro_healthy[i] && _use[i]) {
                 _primary_gyro = i;
@@ -1364,9 +1367,10 @@ void AP_InertialSensor::update(void)
     }
 
     // apply notch filter to primary gyro
+    //将陷波滤波器应用于主陀螺仪
     _gyro[_primary_gyro] = _notch_filter.apply(_gyro[_primary_gyro]);
     
-    _last_update_usec = AP_HAL::micros();
+    _last_update_usec = AP_HAL::micros();// 计时
     
     _have_sample = false;
 }

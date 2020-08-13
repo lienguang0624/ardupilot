@@ -194,10 +194,13 @@ void SRV_Channels::setup_failsafe_trim_all(void)
 
 /*
   run calc_pwm for all channels
+  对所有通道运行calc_pwm
  */
 void SRV_Channels::calc_pwm(void)
 {
     for (uint8_t i=0; i<NUM_SERVO_CHANNELS; i++) {
+        //channels[i].calc_pwm（）：将缩放后的输出转换为pwm值
+        //functions[channels[i].function].output_scaled:此函数的缩放输出
         channels[i].calc_pwm(functions[channels[i].function].output_scaled);
     }
 }
@@ -212,6 +215,7 @@ void SRV_Channels::set_output_pwm_chan(uint8_t chan, uint16_t value)
 
 /*
   wrapper around hal.rcout->cork()
+  hal.rcout-> cork（）的包装器
  */
 void SRV_Channels::cork()
 {

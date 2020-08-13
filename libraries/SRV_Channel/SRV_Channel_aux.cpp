@@ -57,11 +57,12 @@ void SRV_Channel::output_ch(void)
 
 /*
   call output_ch() on all channels
+  在所有通道上调用output_ch（）
  */
 void SRV_Channels::output_ch_all(void)
 {
     for (uint8_t i = 0; i < NUM_SERVO_CHANNELS; i++) {
-        channels[i].output_ch();
+        channels[i].output_ch();//根据函数输出值
     }
 }
 

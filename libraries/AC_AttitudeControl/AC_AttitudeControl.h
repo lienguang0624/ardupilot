@@ -375,6 +375,7 @@ protected:
 
     // This represents the angular velocity in radians per second in the body frame, used in the angular
     // velocity controller.
+    //这表示在角速度控制器中使用的身体框架中以弧度/秒为单位的角速度。
     Vector3f            _rate_target_ang_vel;
 
     // This represents a quaternion attitude error in the body frame, used for inertial frame reset handling.
@@ -398,9 +399,11 @@ protected:
     float               _althold_lean_angle_max = 0.0f;
 
     // desired throttle_low_comp value, actual throttle_low_comp is slewed towards this value over 1~2 seconds
+    //所需的油门_低_补偿值，实际油门_低_补偿在1到2秒钟内向该值转换
     float               _throttle_rpy_mix_desired;
 
     // mix between throttle and hover throttle for 0 to 1 and ratio above hover throttle for >1
+    //油门和悬停油门之间的混合比为0：1，高于悬停油门的比例为> 1
     float               _throttle_rpy_mix;
 
     // References to external libraries
@@ -411,6 +414,7 @@ protected:
 protected:
     /*
       state of control monitoring
+      控制状态监控
     */
     struct {
         float rms_roll_P;

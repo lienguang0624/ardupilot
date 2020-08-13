@@ -185,6 +185,7 @@ public:
     }
 
     // get the index of the current primary gyro sensor
+    //获取当前主陀螺仪传感器的索引
     virtual uint8_t get_primary_gyro_index(void) const {
         return AP::ins().get_primary_gyro();
     }

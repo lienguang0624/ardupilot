@@ -54,6 +54,7 @@ public:
      * Delay subsequent calls to write() going to the underlying hardware in
      * order to group related writes together. When all the needed writes are
      * done, call push() to commit the changes.
+     * *延迟对底层硬件的后续对write（）的调用，以便将相关的写入分组在一起。 完成所有需要的写操作后，调用push（）提交更改。
      */
     virtual void     cork() = 0;
 

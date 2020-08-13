@@ -156,6 +156,7 @@ public:
     void Log_WriteV(const char *name, const char *labels, const char *units, const char *mults, const char *fmt, va_list arg_list);
 
     // This structure provides information on the internal member data of a PID for logging purposes
+    //此结构提供有关PID内部成员数据的信息，用于记录
     struct PID_Info {
         float desired;
         float P;

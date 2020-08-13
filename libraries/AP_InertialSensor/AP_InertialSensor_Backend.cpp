@@ -129,7 +129,9 @@ void AP_InertialSensor_Backend::_rotate_and_correct_gyro(uint8_t instance, Vecto
 
 /*
   rotate gyro vector and add the gyro offset
+  Ğı×ªÍÓÂİÒÇÊ¸Á¿²¢Ìí¼ÓÍÓÂİÒÇÆ«ÒÆ
  */
+
 void AP_InertialSensor_Backend::_publish_gyro(uint8_t instance, const Vector3f &gyro)
 {
     if ((1U<<instance) & _imu.imu_kill_mask) {

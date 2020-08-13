@@ -10,22 +10,26 @@
 
 /*
   update a RMS estimate of controller state
+  更新控制器状态的RMS估计
+  //更新均方根
  */
 void AC_AttitudeControl::control_monitor_filter_pid(float value, float &rms)
 {
     const float filter_constant = 0.99f;
     // we don't do the sqrt() here as it is quite expensive. That is
     // done when reporting a result
+    //我们不在这里做sqrt（），因为它非常昂贵。 报告结果时即完成
     rms = filter_constant * rms + (1.0f - filter_constant) * sq(value);
 }
 
 /*
   update state in _control_monitor
+  更新_control_monitor中的状态
  */
 void AC_AttitudeControl::control_monitor_update(void)
 {
-    const DataFlash_Class::PID_Info &iroll  = get_rate_roll_pid().get_pid_info();
-    control_monitor_filter_pid(iroll.P + iroll.FF,  _control_monitor.rms_roll_P);
+    const DataFlash_Class::PID_Info &iroll  = get_rate_roll_pid().get_pid_info();//读取滚转角的PID有关参数（P,I,D,FF）
+    control_monitor_filter_pid(iroll.P + iroll.FF,  _control_monitor.rms_roll_P);//更新均方根
     control_monitor_filter_pid(iroll.D,             _control_monitor.rms_roll_D);
 
     const DataFlash_Class::PID_Info &ipitch = get_rate_pitch_pid().get_pid_info();

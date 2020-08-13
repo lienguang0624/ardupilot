@@ -211,27 +211,35 @@ AP_MotorsMulticopter::AP_MotorsMulticopter(uint16_t loop_rate, uint16_t speed_hz
 };
 
 // output - sends commands to the motors
+//输出-向电机发送命令
 void AP_MotorsMulticopter::output()
 {
     // update throttle filter
+    //更新油门过滤器
     update_throttle_filter();
 
     // calc filtered battery voltage and lift_max
+    //计算滤波后的电池电压和lift_max
     update_lift_max_from_batt_voltage();
 
     // run spool logic
+    //运行假脱机逻辑
     output_logic();
 
     // calculate thrust
+    //计算推力
     output_armed_stabilizing();
 
     // apply any thrust compensation for the frame
+    //对框架应用任何推力补偿
     thrust_compensation();
     
     // convert rpy_thrust values to pwm
+    //将rpy_thrust值转换为pwm
     output_to_motors();
 
     // output any booster throttle
+    //输出任何助力油门
     output_boost_throttle();
 };
 

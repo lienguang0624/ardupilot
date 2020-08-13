@@ -237,31 +237,50 @@ float AC_AttitudeControl_Multi::get_throttle_avg_max(float throttle_in)
 }
 
 // update_throttle_rpy_mix - slew set_throttle_rpy_mix to requested value
+// update_throttle_rpy_mix-将set_throttle_rpy_mix转换为请求的值
 void AC_AttitudeControl_Multi::update_throttle_rpy_mix()
 {
     // slew _throttle_rpy_mix to _throttle_rpy_mix_desired
-    if (_throttle_rpy_mix < _throttle_rpy_mix_desired) {
+    //将_throttle_rpy_mix转换为_throttle_rpy_mix_desired
+    if (_throttle_rpy_mix < _throttle_rpy_mix_desired) {//如果油门（_throttle_rpy_mix）低于预期油门（_throttle_rpy_mix_desired）
         // increase quickly (i.e. from 0.1 to 0.9 in 0.4 seconds)
-        _throttle_rpy_mix += MIN(2.0f*_dt, _throttle_rpy_mix_desired-_throttle_rpy_mix);
+        //快速增加（即在0.4秒内从0.1增加到0.9）
+        //增加油门快速增加
+        _throttle_rpy_mix += MIN(2.0f*_dt, _throttle_rpy_mix_desired-_throttle_rpy_mix);//加油门最慢又有个限幅
     } else if (_throttle_rpy_mix > _throttle_rpy_mix_desired) {
         // reduce more slowly (from 0.9 to 0.1 in 1.6 seconds)
+        //更慢的降低速度（在1.6秒内从0.9降低到0.1）
+        //降低油门慢慢降
         _throttle_rpy_mix -= MIN(0.5f*_dt, _throttle_rpy_mix-_throttle_rpy_mix_desired);
     }
-    _throttle_rpy_mix = constrain_float(_throttle_rpy_mix, 0.1f, AC_ATTITUDE_CONTROL_MAX);
+    _throttle_rpy_mix = constrain_float(_throttle_rpy_mix, 0.1f, AC_ATTITUDE_CONTROL_MAX);//整体限幅
 }
 
 void AC_AttitudeControl_Multi::rate_controller_run()
 {
     // move throttle vs attitude mixing towards desired (called from here because this is conveniently called on every iteration)
 	//将油门与姿态混合移至所需位置（从此处调用，因为每次迭代都方便地调用它）
+    //输入：
+    //_throttle_rpy_mix:当前油门
+    //_throttle_rpy_mix_desired:目标油门
+    //输出：
+    //_throttle_rpy_mix：在当前油门基础上的给定油门
 	update_throttle_rpy_mix();
 
+	//通过AP::ins().get_gyro(primary_gyro)获得陀螺仪数据进行滤波及旋转获取最终经过平滑和校正的陀螺仪矢量
+	//输出：
+	//gyro_latest:经过平滑和校正的陀螺仪矢量
     Vector3f gyro_latest = _ahrs.get_gyro_latest();
+    //输入：
+    //gyro_latest:经过平滑和校正的当前陀螺仪矢量
+    //_rate_target_ang_vel:目标角速度
+    //输出：
+    //rate_target_to_motor_roll(gyro_latest.x, _rate_target_ang_vel.x):output:油门输出？ 输出范围-1~+1，并将其分别赋予给_roll_in，_pitch_in，_yaw_in
     _motors.set_roll(rate_target_to_motor_roll(gyro_latest.x, _rate_target_ang_vel.x));
     _motors.set_pitch(rate_target_to_motor_pitch(gyro_latest.y, _rate_target_ang_vel.y));
     _motors.set_yaw(rate_target_to_motor_yaw(gyro_latest.z, _rate_target_ang_vel.z));
 
-    control_monitor_update();
+    control_monitor_update();//更新PID参数均方根
 }
 
 // sanity check parameters.  should be called once before takeoff
