@@ -265,8 +265,11 @@ void AP_MotorsMulticopter::output_min()
 void AP_MotorsMulticopter::update_throttle_filter()
 {
     if (armed()) {
+        //_throttle_filter:油门输入过滤器
         _throttle_filter.apply(_throttle_in, 1.0f/_loop_rate);
         // constrain filtered throttle
+        //限制已过滤的油门
+        //_throttle_filter.get()：获取当前油门
         if (_throttle_filter.get() < 0.0f) {
             _throttle_filter.reset(0.0f);
         }
@@ -334,10 +337,12 @@ float AP_MotorsMulticopter::apply_thrust_curve_and_volt_scaling(float thrust) co
 }
 
 // update_lift_max from battery voltage - used for voltage compensation
+//来自电池电压的update_lift_max-用于电压补偿
 void AP_MotorsMulticopter::update_lift_max_from_batt_voltage()
 {
     // sanity check battery_voltage_min is not too small
     // if disabled or misconfigured exit immediately
+    //如果禁用或配置错误立即退出，则完整性检查battery_voltage_min不会太小
     float _batt_voltage_resting_estimate = AP::battery().voltage_resting_estimate(_batt_idx);
     if((_batt_voltage_max <= 0) || (_batt_voltage_min >= _batt_voltage_max) || (_batt_voltage_resting_estimate < 0.25f*_batt_voltage_min)) {
         _batt_voltage_filt.reset(1.0f);
@@ -348,12 +353,14 @@ void AP_MotorsMulticopter::update_lift_max_from_batt_voltage()
     _batt_voltage_min = MAX(_batt_voltage_min, _batt_voltage_max * 0.6f);
 
     // contrain resting voltage estimate (resting voltage is actual voltage with sag removed based on current draw and resistance)
+    //约束静态电压估算值（静态电压是根据电流消耗和电阻去除了垂度的实际电压）
     _batt_voltage_resting_estimate = constrain_float(_batt_voltage_resting_estimate, _batt_voltage_min, _batt_voltage_max);
 
     // filter at 0.5 Hz
     float batt_voltage_filt = _batt_voltage_filt.apply(_batt_voltage_resting_estimate/_batt_voltage_max, 1.0f/_loop_rate);
 
     // calculate lift max
+    //计算最大提升
     float thrust_curve_expo = constrain_float(_thrust_curve_expo, -1.0f, 1.0f);
     _lift_max = batt_voltage_filt*(1-thrust_curve_expo) + thrust_curve_expo*batt_voltage_filt*batt_voltage_filt;
 }

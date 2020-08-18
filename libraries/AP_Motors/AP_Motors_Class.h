@@ -164,6 +164,7 @@ public:
     
 protected:
     // output functions that should be overloaded by child classes
+    //输出功能应由子类重载
     virtual void        output_armed_stabilizing()=0;
     virtual void        rc_write(uint8_t chan, uint16_t pwm);
     virtual void        rc_write_angle(uint8_t chan, int16_t angle_cd);
@@ -187,16 +188,16 @@ protected:
     } _flags;
 
     // internal variables
-    uint16_t            _loop_rate;                 // rate in Hz at which output() function is called (normally 400hz)
+    uint16_t            _loop_rate;                 // rate in Hz at which output() function is called (normally 400hz) //调用output（）函数时的Hz速率（通常为400hz）
     uint16_t            _speed_hz;                  // speed in hz to send updates to motors
     float               _roll_in;                   // desired roll control from attitude controllers, -1 ~ +1
     float               _pitch_in;                  // desired pitch control from attitude controller, -1 ~ +1
     float               _yaw_in;                    // desired yaw control from attitude controller, -1 ~ +1
-    float               _throttle_in;               // last throttle input from set_throttle caller
+    float               _throttle_in;               // last throttle input from set_throttle caller //来自set_throttle调用者的最后一个油门输入
     float               _forward_in;                // last forward input from set_forward caller
     float               _lateral_in;                // last lateral input from set_lateral caller
     float               _throttle_avg_max;          // last throttle input from set_throttle_avg_max
-    LowPassFilterFloat  _throttle_filter;           // throttle input filter
+    LowPassFilterFloat  _throttle_filter;           // throttle input filter //油门输入过滤器
     spool_up_down_desired _spool_desired;           // desired spool state
 
     // air pressure compensation variables

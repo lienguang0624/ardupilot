@@ -235,7 +235,6 @@ void Copter::fast_loop()
 
     // send outputs to the motors library immediately
     //立即将输出发送到电机库
-    motors_output();
 
     // run EKF state estimator (expensive)
     //运行EKF状态估算器（昂贵）

@@ -18,6 +18,7 @@ DigitalLPF<T>::DigitalLPF() {
 }
 
 // add a new raw value to the filter, retrieve the filtered result
+//将新的原始值添加到过滤器中，检索过滤后的结果
 template <class T>
 T DigitalLPF<T>::apply(const T &sample, float cutoff_freq, float dt) {
     if (cutoff_freq <= 0.0f || dt <= 0.0f) {
@@ -48,6 +49,7 @@ void DigitalLPF<T>::compute_alpha(float sample_freq, float cutoff_freq) {
 }
 
 // get latest filtered value from filter (equal to the value returned by latest call to apply method)
+//从过滤器中获取最新的过滤值（等于最新一次调用apply方法返回的值）
 template <class T>
 const T &DigitalLPF<T>::get() const {
     return _output;

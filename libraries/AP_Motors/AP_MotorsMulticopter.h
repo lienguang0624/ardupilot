@@ -109,6 +109,7 @@ protected:
     void                output_logic();
 
     // output_to_motors - sends commands to the motors
+    // output_to_motors-向电机发送命令
     virtual void        output_to_motors() = 0;
 
     // update the throttle input filter
@@ -133,6 +134,7 @@ protected:
     int16_t             calc_spin_up_to_pwm() const;
 
     // apply any thrust compensation for the frame
+    //对框架应用任何推力补偿
     virtual void        thrust_compensation(void) {}
 
     // output booster throttle, if any
